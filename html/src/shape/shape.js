@@ -14,7 +14,11 @@ export default class Shape {
     }
 
     moveDown() {
-        this.row++;
+        this.y++;
+    }
+
+    moveUp() {
+        this.y--;
     }
 
     moveLeft() {
