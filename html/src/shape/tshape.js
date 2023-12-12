@@ -6,6 +6,6 @@ export default class TShape extends Shape {
             [0, 1, 0],
             [1, 1, 1],
             [0, 0, 0],
-        ], '#FFA500');
+        ], '#000080');
     }
 }

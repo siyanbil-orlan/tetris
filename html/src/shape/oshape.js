@@ -5,6 +5,6 @@ export default class OShape extends Shape {
         super([
             [1, 1],
             [1, 1],
-        ], '#FFA500');
+        ], '#00FF00');
     }
 }

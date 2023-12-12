@@ -6,6 +6,6 @@ export default class ZShape extends Shape {
             [1, 1, 0],
             [0, 1, 1],
             [0, 0, 0],
-        ], '#FFA500');
+        ], '#800080');
     }
 }

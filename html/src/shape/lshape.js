@@ -6,6 +6,6 @@ export default class LShape extends Shape {
             [0, 1, 0],
             [0, 1, 0],
             [0, 1, 1],
-        ], '#FFA500');
+        ], '#FFFF00');
     }
 }

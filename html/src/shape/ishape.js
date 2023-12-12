@@ -7,6 +7,6 @@ export default class IShape extends Shape {
             [0, 1, 0, 0],
             [0, 1, 0, 0],
             [0, 1, 0, 0],
-        ], '#FFA500');
+        ], '#FF0000');
     }
 }

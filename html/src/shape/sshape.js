@@ -6,6 +6,6 @@ export default class SShape extends Shape {
             [0, 1, 1],
             [1, 1, 0],
             [0, 0, 0],
-        ], '#FFA500');
+        ], '#0000FF');
     }
 }
