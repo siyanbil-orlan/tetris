@@ -5,6 +5,12 @@ import OShape from './src/shape/oshape.js'
 import SShape from './src/shape/sshape.js'
 import TShape from './src/shape/tshape.js'
 import ZShape from './src/shape/zshape.js'
+import InputHandler from './src/inputhandler.js'
+import DropCommand from './src/command/dropcommand.js'
+import MoveDownCommand from './src/command/movedowncommand.js'
+import MoveLeftCommand from './src/command/moveleftcommand.js'
+import MoveRightCommand from './src/command/moverightcommand.js'
+import RotateCommand from './src/command/rotatecommand.js'
 
 class TetrisGame {
     constructor(canvasId, gridSize) {
@@ -15,9 +21,25 @@ class TetrisGame {
         this.columns = this.canvas.width / gridSize;
         this.grid = this.initGrid();
         this.currentPiece = null;
-        this.fallInterval = 200; // Интервал падения тетромино (в миллисекундах)
+        this.fallInterval = 200; // Интервал падения блока (в миллисекундах)
         this.lastFallTime = 0; // Время последнего падения
         this.isGameOver = false;
+        this.inputHandler = new InputHandler();
+
+        // Задаем команды для клавиш
+        this.inputHandler.setCommand('a', new MoveLeftCommand(this));
+        this.inputHandler.setCommand('d', new MoveRightCommand(this));
+        this.inputHandler.setCommand('s', new MoveDownCommand(this));
+        this.inputHandler.setCommand('w', new RotateCommand(this));
+        this.inputHandler.setCommand('ArrowLeft', new MoveLeftCommand(this));
+        this.inputHandler.setCommand('ArrowRight', new MoveRightCommand(this));
+        this.inputHandler.setCommand('ArrowDown', new MoveDownCommand(this));
+        this.inputHandler.setCommand('ArrowUp', new RotateCommand(this));
+        this.inputHandler.setCommand('Control', new DropCommand(this));
+
+        window.addEventListener('keydown', (event) => {
+            this.inputHandler.handleInput(event.key);
+        });
     }
 
     initGrid() {
@@ -25,7 +47,7 @@ class TetrisGame {
         for (let row = 0; row < this.rows; row++) {
             grid[row] = [];
             for (let col = 0; col < this.columns; col++) {
-                grid[row][col] = 0;
+                grid[row][col] = {'value': 0, 'color': '#fff'};
             }
         }
         return grid;
@@ -34,17 +56,16 @@ class TetrisGame {
     drawSquare(x, y, color) {
         this.context.fillStyle = color;
         this.context.fillRect(x * this.gridSize, y * this.gridSize, this.gridSize, this.gridSize);
-        this.context.strokeStyle = '#000';
         this.context.strokeRect(x * this.gridSize, y * this.gridSize, this.gridSize, this.gridSize);
     }
 
     drawGrid() {
         for (let row = 0; row < this.rows; row++) {
             for (let col = 0; col < this.columns; col++) {
-                const gridValue = this.grid[row][col];
-                if (gridValue) {
+                const gridCell = this.grid[row][col];
+                if (gridCell.value) {
                     // Если есть блок в grid, рисуем его
-                    this.drawSquare(col, row, '#333');
+                    this.drawSquare(col, row, gridCell.color);
                 } else if (
                     this.currentPiece &&
                     this.currentPiece.shape[row - this.currentPiece.y] &&
@@ -67,7 +88,7 @@ class TetrisGame {
 
         // Позиционируем тетромино вверху поля
         this.currentPiece.x = Math.floor(this.columns / 2) - Math.floor(this.currentPiece.shape[0].length / 2);
-        this.currentPiece.y = 0;
+        this.currentPiece.y = -this.currentPiece.shape.length;
     }
 
     movePieceLeft() {
@@ -92,6 +113,7 @@ class TetrisGame {
             // Если столкновение, отменяем движение и фиксируем тетромино
             this.currentPiece.moveUp();
             this.fixPiece();
+            this.removeLines();
             this.currentPiece = null;
         }
     }
@@ -113,6 +135,7 @@ class TetrisGame {
         // После завершения падения фиксируем тетромино на поле
         this.currentPiece.moveUp();
         this.fixPiece();
+        this.removeLines();
         this.currentPiece = null;
     }
 
@@ -120,10 +143,11 @@ class TetrisGame {
         for (let row = 0; row < this.currentPiece.shape.length; row++) {
             for (let col = 0; col < this.currentPiece.shape[row].length; col++) {
                 if (
+                    this.currentPiece.y > 0 &&
                     this.currentPiece.shape[row][col] &&
                     (
                         this.grid[row + this.currentPiece.y] === undefined ||
-                        this.grid[row + this.currentPiece.y][col + this.currentPiece.x] !== 0
+                        this.grid[row + this.currentPiece.y][col + this.currentPiece.x].value !== 0
                     )
                 ) {
                     return true; // Столкновение
@@ -137,9 +161,26 @@ class TetrisGame {
         for (let row = 0; row < this.currentPiece.shape.length; row++) {
             for (let col = 0; col < this.currentPiece.shape[row].length; col++) {
                 if (this.currentPiece.shape[row][col]) {
-                    this.grid[row + this.currentPiece.y][col + this.currentPiece.x] = 1;
+                    this.grid[row + this.currentPiece.y][col + this.currentPiece.x] = {'value': 1, 'color': this.currentPiece.color};
                 }
             }
+        }
+    }
+
+    removeLines() {
+        const fullRows = [];
+
+        for (let row = 0; row < this.rows; row++) {
+          if (this.grid[row].every(cell => cell.value === 1)) {
+            fullRows.push(row);
+          }
+        }
+
+        if (fullRows.length > 0) {
+          fullRows.forEach(fullRow => {
+            this.grid.splice(fullRow, 1);
+            this.grid.unshift(Array(this.columns).fill({'value': 0, 'color': '#fff'}));
+          });
         }
     }
 
@@ -155,7 +196,7 @@ class TetrisGame {
     }
 
     checkGameOver() {
-        if (this.grid[0].includes(1)) {
+        if (this.grid[0].some(cell => cell.value === 1)) {
             this.stopGame();
         }
     }
