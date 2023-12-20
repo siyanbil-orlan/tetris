@@ -147,7 +147,9 @@ class TetrisGame {
                     this.currentPiece.shape[row][col] &&
                     (
                         this.grid[row + this.currentPiece.y] === undefined ||
-                        this.grid[row + this.currentPiece.y][col + this.currentPiece.x].value !== 0
+                        this.grid[row + this.currentPiece.y][col + this.currentPiece.x] === undefined ||
+                        this.grid[row + this.currentPiece.y][col + this.currentPiece.x].value !== 0 ||
+                        col + this.currentPiece.x < 0
                     )
                 ) {
                     return true; // Столкновение
