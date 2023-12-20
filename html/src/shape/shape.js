@@ -22,10 +22,10 @@ export default class Shape {
     }
 
     moveLeft() {
-        this.y--;
+        this.x--;
     }
 
     moveRight() {
-        this.y++;
+        this.x++;
     }
 }
