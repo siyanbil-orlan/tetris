@@ -24,26 +24,26 @@ class TetrisGame {
         this.fallInterval = 200; // Интервал падения блока (в миллисекундах)
         this.lastFallTime = 0; // Время последнего падения
         this.isGameOver = false;
-        this.inputHandler = new InputHandler();
-
-        let moveLeft = new MoveLeftCommand(this);
-        let moveRigth = new MoveRightCommand(this);
-        let moveDown = new MoveDownCommand(this);
-        let rotate = new RotateCommand(this);
-        let drop = new DropCommand(this);
-
-        this.inputHandler.setCommand('a', moveLeft);
-        this.inputHandler.setCommand('d', moveRigth);
-        this.inputHandler.setCommand('s', moveDown);
-        this.inputHandler.setCommand('w', rotate);
-        this.inputHandler.setCommand('ArrowLeft', moveLeft);
-        this.inputHandler.setCommand('ArrowRight', moveRigth);
-        this.inputHandler.setCommand('ArrowDown', moveDown);
-        this.inputHandler.setCommand('ArrowUp', rotate);
-        this.inputHandler.setCommand(' ', drop);
 
         window.addEventListener('keydown', (event) => {
-            this.inputHandler.handleInput(event.key);
+            const key = event.key;
+            switch (key) {
+                case 'ArrowLeft':
+                    this.movePieceLeft();
+                    break;
+                case 'ArrowRight':
+                    this.movePieceRight();
+                    break;
+                case 'ArrowDown':
+                    this.movePieceDown();
+                    break;
+                case 'ArrowUp':
+                    this.rotatePiece();
+                    break;
+                case 'Control':
+                    this.dropPiece();
+                    break;
+            }
         });
     }
 
