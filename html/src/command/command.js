@@ -1,5 +1,9 @@
 export default class Command {
+    constructor(tetrisGame) {
+        this.tetrisGame = tetrisGame;
+    }
+
     execute() {
-        throw new Error("Метод execute должен быть переопределен");
+        throw new Error("The execute method must be redefined");
     }
 }

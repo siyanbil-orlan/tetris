@@ -26,16 +26,21 @@ class TetrisGame {
         this.isGameOver = false;
         this.inputHandler = new InputHandler();
 
-        // Задаем команды для клавиш
-        this.inputHandler.setCommand('a', new MoveLeftCommand(this));
-        this.inputHandler.setCommand('d', new MoveRightCommand(this));
-        this.inputHandler.setCommand('s', new MoveDownCommand(this));
-        this.inputHandler.setCommand('w', new RotateCommand(this));
-        this.inputHandler.setCommand('ArrowLeft', new MoveLeftCommand(this));
-        this.inputHandler.setCommand('ArrowRight', new MoveRightCommand(this));
-        this.inputHandler.setCommand('ArrowDown', new MoveDownCommand(this));
-        this.inputHandler.setCommand('ArrowUp', new RotateCommand(this));
-        this.inputHandler.setCommand('Control', new DropCommand(this));
+        let moveLeft = new MoveLeftCommand(this);
+        let moveRigth = new MoveRightCommand(this);
+        let moveDown = new MoveDownCommand(this);
+        let rotate = new RotateCommand(this);
+        let drop = new DropCommand(this);
+
+        this.inputHandler.setCommand('a', moveLeft);
+        this.inputHandler.setCommand('d', moveRigth);
+        this.inputHandler.setCommand('s', moveDown);
+        this.inputHandler.setCommand('w', rotate);
+        this.inputHandler.setCommand('ArrowLeft', moveLeft);
+        this.inputHandler.setCommand('ArrowRight', moveRigth);
+        this.inputHandler.setCommand('ArrowDown', moveDown);
+        this.inputHandler.setCommand('ArrowUp', rotate);
+        this.inputHandler.setCommand(' ', drop);
 
         window.addEventListener('keydown', (event) => {
             this.inputHandler.handleInput(event.key);
